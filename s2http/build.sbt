@@ -20,6 +20,7 @@ lazy val akkaHttpVersion = "10.1.6"
 lazy val akkaVersion = "2.5.19"
 lazy val endpointVersion = "0.9.0"
 lazy val circeVersion = "0.11.1"
+lazy val akkaHttpJsonVersion = "1.25.2"
 
 name := "s2http"
 
@@ -47,6 +48,7 @@ libraryDependencies ++= Seq(
   "org.julienrf" %% "endpoints-akka-http-server" % endpointVersion,
   "org.julienrf" %% "endpoints-json-schema-generic" % endpointVersion,
   "org.julienrf" %% "endpoints-openapi" % endpointVersion,
+  "de.heikoseeberger" %% "akka-http-circe" % akkaHttpJsonVersion,
 
   "org.webjars" % "swagger-ui" % "3.20.9"
 

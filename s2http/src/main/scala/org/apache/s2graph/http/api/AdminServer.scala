@@ -15,5 +15,4 @@ class AdminServer extends AdminEndpoints with server.Endpoints with server.JsonS
   }
 
   val route = getServiceSpec.implementedBy(getService)
-  val documentRoute =
 }
