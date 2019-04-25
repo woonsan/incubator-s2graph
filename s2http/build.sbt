@@ -18,6 +18,8 @@
  */
 lazy val akkaHttpVersion = "10.1.6"
 lazy val akkaVersion = "2.5.19"
+lazy val endpointVersion = "0.9.0"
+lazy val circeVersion = "0.11.1"
 
 name := "s2http"
 
@@ -35,7 +37,19 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
   "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion % Test,
 
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+
+  "io.circe" %% "circe-core" % circeVersion,
+
+  "org.julienrf" %% "endpoints-algebra" % endpointVersion,
+  "org.julienrf" %% "endpoints-algebra-circe" % endpointVersion,
+  "org.julienrf" %% "endpoints-algebra-json-schema" % endpointVersion,
+  "org.julienrf" %% "endpoints-akka-http-server" % endpointVersion,
+  "org.julienrf" %% "endpoints-json-schema-generic" % endpointVersion,
+  "org.julienrf" %% "endpoints-openapi" % endpointVersion,
+
+  "org.webjars" % "swagger-ui" % "3.20.9"
+
 )
 
 Revolver.settings

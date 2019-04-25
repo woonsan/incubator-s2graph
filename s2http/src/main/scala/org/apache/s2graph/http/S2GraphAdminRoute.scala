@@ -7,6 +7,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import org.apache.s2graph.core.Management.JsonModel.HTableParams
 import org.apache.s2graph.core.schema._
+import org.apache.s2graph.http.api.AdminServer
 import org.slf4j.LoggerFactory
 import play.api.libs.json._
 
@@ -54,14 +55,17 @@ trait S2GraphAdminRoute extends PlayJsonSupport {
   lazy val management: Management = s2graph.management
   lazy val requestParser: RequestParser = new RequestParser(s2graph)
 
+  val adminServer = new AdminServer
+
   // routes impl
   /* GET */
   //  GET /admin/getService/:serviceName
-  lazy val getService = path("getService" / Segment) { serviceName =>
-    val serviceOpt = Management.findService(serviceName)
-
-    complete(toHttpEntity(serviceOpt, message = s"Service not found: ${serviceName}"))
-  }
+  lazy val getService = adminServer.route
+//  path("getService" / Segment) { serviceName =>
+//    val serviceOpt = Management.findService(serviceName)
+//
+//    complete(toHttpEntity(serviceOpt, message = s"Service not found: ${serviceName}"))
+//  }
 
   //  GET /admin/getServiceColumn/:serviceName/:columnName
   lazy val getServiceColumn = path("getServiceColumn" / Segment / Segment) { (serviceName, columnName) =>
