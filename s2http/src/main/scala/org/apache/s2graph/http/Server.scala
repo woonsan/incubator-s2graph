@@ -33,6 +33,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import org.apache.s2graph.core.S2Graph
+import org.apache.s2graph.http.api.DocumentationServer
 import org.slf4j.LoggerFactory
 
 object Server extends App
@@ -65,26 +66,29 @@ object Server extends App
 
   def health = HttpResponse(status = StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, serverHealth))
 
+  val documentationServer = new DocumentationServer
+
   // Allows you to determine routes to expose according to external settings.
   lazy val routes: Route = concat(
     pathPrefix("graphs")(traversalRoute),
     pathPrefix("mutate")(mutateRoute),
     pathPrefix("admin")(adminRoute),
     pathPrefix("graphql")(graphqlRoute),
-    pathPrefix("api-docs") {
-      pathEnd {
-        redirect("/api-docs/", StatusCodes.TemporaryRedirect)
-      } ~
-        path(Segments) { segs => {
-            val resPath = segs match {
-              case Nil | SwaggerIndexPage :: Nil => SwaggerIndexResPath
-              case "s2http" :: rest => "META-INF/resources/s2http/" + rest.mkString("/")
-              case _ => SwaggerWebJarBaseResPath + segs.mkString("/")
-            }
-            getFromResource(resPath)
-          }
-        }
-    },
+//    pathPrefix("api-docs") {
+//      pathEnd {
+//        redirect("/api-docs/", StatusCodes.TemporaryRedirect)
+//      } ~
+//        path(Segments) { segs => {
+//            val resPath = segs match {
+//              case Nil | SwaggerIndexPage :: Nil => SwaggerIndexResPath
+//              case "s2http" :: rest => "META-INF/resources/s2http/" + rest.mkString("/")
+//              case _ => SwaggerWebJarBaseResPath + segs.mkString("/")
+//            }
+//            getFromResource(resPath)
+//          }
+//        }
+//    },
+    pathPrefix("api-docs")(documentationServer.route),
     get(complete(health))
   )
 
