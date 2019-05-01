@@ -70,7 +70,7 @@ object Server extends App
     pathPrefix("mutate")(mutateRoute),
     pathPrefix("admin")(adminRoute),
     pathPrefix("graphql")(graphqlRoute),
-    pathPrefix("doc")(documentationServer.route),
+    pathPrefix("api-docs")(documentationServer.route),
     get(complete(health))
   )
 

@@ -11,5 +11,7 @@ object AdminDocumentation
   val api: OpenApi =
     openApi(
       Info(title = "API to manipulate a counter", version = "1.0.0")
-    )(getServiceSpec)
+    )(
+      (getSpecs ++ postSpecs): _*
+    )
 }
