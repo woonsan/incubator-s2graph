@@ -7,6 +7,7 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import org.apache.s2graph.core.Management.JsonModel.HTableParams
 import org.apache.s2graph.core.schema._
+import org.apache.s2graph.http.api.AdminServer
 import org.slf4j.LoggerFactory
 import play.api.libs.json._
 
@@ -54,49 +55,11 @@ trait S2GraphAdminRoute extends PlayJsonSupport {
   lazy val management: Management = s2graph.management
   lazy val requestParser: RequestParser = new RequestParser(s2graph)
 
+  lazy val adminServer = new AdminServer(s2graph)
+
   // routes impl
-  /* GET */
-  //  GET /admin/getService/:serviceName
-  lazy val getService = path("getService" / Segment) { serviceName =>
-    val serviceOpt = Management.findService(serviceName)
-
-    complete(toHttpEntity(serviceOpt, message = s"Service not found: ${serviceName}"))
-  }
-
-  //  GET /admin/getServiceColumn/:serviceName/:columnName
-  lazy val getServiceColumn = path("getServiceColumn" / Segment / Segment) { (serviceName, columnName) =>
-    val ret = Management.findServiceColumn(serviceName, columnName)
-    complete(toHttpEntity(ret, message = s"ServiceColumn not found: ${serviceName}, ${columnName}"))
-  }
-
-  //  GET /admin/getLabel/:labelName
-  lazy val getLabel = path("getLabel" / Segment) { labelName =>
-    val labelOpt = Management.findLabel(labelName)
-
-    complete(toHttpEntity(labelOpt, message = s"Label not found: ${labelName}"))
-  }
-
-  //  GET /admin/getLabels/:serviceName
-  lazy val getLabels = path("getLabels" / Segment) { serviceName =>
-    val ret = Management.findLabels(serviceName)
-
-    complete(toHttpEntity(ret, StatusCodes.OK))
-  }
 
   /* POST */
-  //  POST /admin/createService
-  lazy val createService = path("createService") {
-    entity(as[JsValue]) { params =>
-
-      val parseTry = Try(requestParser.toServiceElements(params))
-      val serviceTry = for {
-        (serviceName, cluster, tableName, preSplitSize, ttl, compressionAlgorithm) <- parseTry
-        service <- management.createService(serviceName, cluster, tableName, preSplitSize, ttl, compressionAlgorithm)
-      } yield service
-
-      complete(toHttpEntity(serviceTry))
-    }
-  }
 
   //  POST /admin/createServiceColumn
   lazy val createServiceColumn = path("createServiceColumn") {
@@ -252,14 +215,12 @@ trait S2GraphAdminRoute extends PlayJsonSupport {
   lazy val adminRoute: Route =
     get {
       concat(
-        getService,
-        getServiceColumn,
-        getLabel,
-        getLabels
+        adminServer.getRoutes: _*
       )
     } ~ post {
       concat(
-        createService,
+//        createService,
+        adminServer.createServiceRoute,
         createServiceColumn,
         createLabel,
         addIndex,
